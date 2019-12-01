@@ -86,7 +86,7 @@ $i=0;
                           </a>
 
                         <div class="dropdown-menu dropItem" aria-labelledby="dropdownMenuLink">
-                           <a class="dropdown-item dropItem" href="#">Profile</a>
+                           <a class="dropdown-item dropItem" href="profile.php">Profile</a>
                             <a class="dropdown-item dropItem" href="logout.php">Logout</a>
                           
                           </div>

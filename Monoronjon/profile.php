@@ -37,7 +37,8 @@ if(mysqli_num_rows($query)==1)
   	$bio= mysqli_real_escape_string($link, $_POST['bio']);
 
   	// image file directory
-  	$target = "images/".basename($imageLocation);
+  	
+    $target = "images/".basename($imageLocation);
      
   	$sql = "UPDATE user SET fName='$fn',lName='$ln',image='$imageLocation',bio='$bio' WHERE id='$id'";
   	// execute query
@@ -52,7 +53,7 @@ if(mysqli_num_rows($query)==1)
   	}
   }
 
-
+$result = mysqli_query($link,"SELECT * FROM meme WHERE u_id='$id' ORDER BY m_id DESC");
 
 
 ?>
@@ -119,6 +120,12 @@ if(mysqli_num_rows($query)==1)
       </nav>
       
       
+      
+      
+      
+      
+      
+      
     <div class="container-fluit mt-5 bt-5 profile">
         <div class="row justify-content-center">
             <div class="row">
@@ -137,14 +144,12 @@ if(mysqli_num_rows($query)==1)
                 <div class="col"></div>
                 <div class="col-6">
                     <ul class="nav nav-tabs">
+                     
                       <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#">Home</a>
+                        <a class="nav-link active" data-toggle="tab" href="#">Posts</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#">Posts</a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#">Comments</a>
+                        <a class="nav-link" id="comments" data-toggle="tab" href="#">Comments</a>
                       </li>
                     </ul>
                 </div>
@@ -152,6 +157,72 @@ if(mysqli_num_rows($query)==1)
             </div>
         </div>
     </div>
+      
+      
+        <div class="container" id="posts" >
+      
+      <?php $i=0;  while($row=mysqli_fetch_array($result)){  $i++; ?>
+      <div class="card" style="width: 820px;">
+          <div class="card-body" >
+         
+              <h4 class="header"><?php 
+                $userId=$row['u_id']; 
+                //echo $userId+1;
+                //THis query is for the first name and the last name of user who posted the meme                                           
+                $userSql="SELECT * FROM user WHERE id=$userId"; 
+                //echo $userSql;                                      
+                $userNameQuery=mysqli_query($link,$userSql);
+                if($userNameQuery){                                    
+                $uNRow=mysqli_fetch_array($userNameQuery);
+                echo $uNRow['fName']." ".$uNRow['lName'];                                      
+                }
+                else echo "unsuccessful";                                      
+                  ?></h4>
+        <h5 class="header"><?php echo $row['caption'];?></h5>     
+              <!-- checking if the memes are already liked by the user or not -->
+              <?php 
+//               $meme_id=$row['m_id'];
+//               $likeQuery= mysqli_query($link,"SELECT * FROM likes WHERE m_id='$meme_id' AND u_id='$uId' ");
+//               
+//            $numRows = mysqli_num_rows($likeQuery);
+                                                       
+                                                           
+                                                           
+                                                           
+              ?>
+              
+      <img id="memeImage" style="width:100%; " src="images/<?php echo $row['imageLocation'];  ?>">
+         
+          </div>
+            <div class="card-footer">
+                <div id="like<?php echo $row['m_id'];?>"><?php echo $row['likes']; ?> </div>
+                
+                
+               
+                
+                
+                <a href="#" id="viewCom<?php echo $_SESSION['m_id'] ?>" onclick="viewComment(<?php echo $row['m_id'] ?>,<?php echo $_SESSION['u_id'] ?>,'<?php echo $row['m_id'] ?>','<?php echo $row['imageLocation'];  ?>','<?php echo $row['caption'];?>')"> View Comments</a>
+                
+                <button class="btn btn-dark float-right" id="commentBtn<?php echo $row['m_id'];?>" onclick="displayCommentSection('commentSection<?php echo $row['m_id'];?>','commentBtn<?php echo $row['m_id'];?>')">Comment</button>
+                
+                <div class="commentSection mt-2 mb-2" id="commentSection<?php echo $row['m_id'];?>" style="display:none">
+                <form method="post"><input type="text" autocomplete="off" class="form-control" required id="commentTxt<?php echo $row['m_id'];?>" placeholder="Type your Comment">
+              
+                    <a href="#" id="commentSubmit<?php echo $_SESSION['m_id'] ?>" onclick="comment(<?php echo $row['m_id'] ?>,<?php echo $_SESSION['u_id'] ?>,'<?php echo $row['m_id'] ?>','<?php echo $row['imageLocation'];  ?>','<?php echo $row['caption'];?>')" class="btn btn-danger mt-2 float-right" name="commentSubmitBtn<?php echo $row['m_id'];?>">Submit</a>
+                    
+                </form>
+                </div>
+            
+          </div>
+          
+    </div>
+     
+      <?php } // while ends here?>
+  </div> 
+      
+      
+      
+      
       <div class="modal fade" id="myModal">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -194,10 +265,62 @@ if(mysqli_num_rows($query)==1)
     </div>
   </div>
 </div>
+      <script> 
+      
+    $("#comments").click(function(){
+     $("#posts").hide();
+    });
+               function displayCommentSection(cs,cb)
+       {
+        
+        
+      //  alert("in");
+       // alert(cs+" "+cb);
+       if(document.getElementById(cs).style.display=='block') {
+           console.log(cs);
+           document.getElementById(cs).style.display='none';
+           document.getElementById(cb).innerHTML='comment';                                                                  
+        }
+        else 
+        {
+            console.log(cs);
+            document.getElementById(cs).style.display='block';
+            document.getElementById(cb).innerHTML='cancel';
+        }
+        
+        
+    }
+          
+               function comment(m_id,u_id,m_input,img,caption)
+    {
+        var com= $("#commentTxt"+m_input).val();
+        console.log(com+" by "+m_input);
+        console.log("#commentTxt"+m_input);
+        console.log(img);
+        var link='comment.php?m_id='+m_id+'&com='+com+'&u_id='+u_id+'&img='+img+'&caption='+caption+'&c='+'1';
+        console.log(link);
+     // $("#commentSubmit"+m_input).attr("href",link);
+      //  $("#commentSubmit"+m_input).click='on';
+        window.location.href=link;
+    }
+        function viewComment(m_id,u_id,m_input,img,caption)
+    {
+        //var com= $("#commentTxt"+m_input).val();
+        //console.log(com+" by "+m_input);
+        //console.log("#commentTxt"+m_input);
+        //console.log(img);
+        var link='comment.php?m_id='+m_id+'&u_id='+u_id+'&img='+img+'&caption='+caption+'&c='+'0';
+        console.log(link);
+     // $("#commentSubmit"+m_input).attr("href",link);
+      //  $("#commentSubmit"+m_input).click='on';
+        window.location.href=link;
+    }
+      
+      </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>  
