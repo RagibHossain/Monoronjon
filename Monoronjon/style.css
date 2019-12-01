@@ -1,0 +1,53 @@
+#login-card{
+ width: 350px;
+ position: relative;
+ height: 500px;    
+ top: 170px;
+  border-radius: 50px;  
+    
+}
+#signup-card{
+    
+ width: 450px;
+ position: relative;
+ height: 750px;    
+ top: 100px;
+     
+ border-radius: 50px;  
+    
+}
+.myImg{
+    width: 100px;
+    height: 100px;
+    border-radius: 20px;
+    margin-left: 100px;
+}
+#successDiv{
+    color: lawngreen;
+    
+}
+
+#errorDiv{
+    color: red;
+    
+}
+#memeCard{
+    
+    width: 450px;
+    height: 450px;
+    
+}
+.dropItem{
+    
+    color: darkgray;
+}
+.cardMod{
+    width: 400px;
+    
+    
+}
+.profile{
+    margin-top: 20px;
+    
+    
+}
